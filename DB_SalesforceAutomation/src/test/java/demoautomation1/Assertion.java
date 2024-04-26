@@ -8,15 +8,10 @@ public class Assertion {
     public static void main(String[] args) {
         try {
             // Read JSON files
-            JSONArray jsonArray1;
-            JSONArray jsonArray2;
-            try (FileReader reader1 = new FileReader("D:/databaseresponse.json");
-                 FileReader reader2 = new FileReader("D:/salesforce.json")) {
-                jsonArray1 = new JSONArray(readJSONFile(reader1));
-                jsonArray2 = new JSONArray(readJSONFile(reader2));
-            }
+            JSONArray jsonArray1 = readJSONFile("D:/databaseresponse.json");
+            JSONArray jsonArray2 = readJSONFile("D:/salesforce.json");
 
-            // Compare records based on name
+         // Compare records based on name
             for (int i = 0; i < jsonArray1.length(); i++) {
                 JSONObject obj1 = jsonArray1.getJSONObject(i);
                 String name1 = obj1.getString("Name");
@@ -28,8 +23,7 @@ public class Assertion {
                     if (name1.equalsIgnoreCase(name2)) {
                         // Names match, now compare remaining fields
                         System.out.println("Matching record found for: " + name1);
-                        boolean allMatched = compareRemainingFields(obj1, obj2);
-                        if (allMatched) {
+                        if (compareRemainingFields(obj1, obj2)) {
                             System.out.println("All details are matched");
                         }
                         break; // Break inner loop once match found
@@ -42,14 +36,15 @@ public class Assertion {
         }
     }
 
-    // Function to read JSON content from FileReader and return as String
-    public static String readJSONFile(FileReader reader) throws Exception {
+    // Function to read JSON file and return JSONArray
+    public static JSONArray readJSONFile(String filePath) throws Exception {
+        FileReader reader = new FileReader(filePath);
         StringBuilder jsonString = new StringBuilder();
         int character;
         while ((character = reader.read()) != -1) {
             jsonString.append((char) character);
         }
-        return jsonString.toString();
+        return new JSONArray(jsonString.toString());
     }
 
     // Function to compare remaining fields of matching records
@@ -63,46 +58,43 @@ public class Assertion {
         phone2 = convertPhoneNumber(phone2);
 
         if (!phone1.equals(phone2)) {
-            System.out.println("Phone numbers don't match between the two records.");
+            System.out.println("Phone numbers do not match.");
             return false;
         }
 
         String email1 = obj1.optString("Email", "");
         String email2 = obj2.optString("Email", "");
         if (!email1.equalsIgnoreCase(email2)) {
-            System.out.println("Emails don't match between the two records.");
+            System.out.println("Emails do not match.");
             return false;
         }
 
         // Compare Gender and Salutation
         String gender1 = obj1.optString("Gender", "");
         String gender2 = getGenderFromSalutation(obj2.optString("Salutation", ""));
+        
         if (!gender1.equalsIgnoreCase(gender2)) {
-            System.out.println("Genders don't match between the two records.");
+            System.out.println("Gender does not match.");
             return false;
         }
 
-        // Compare Address
-        String address1 = obj1.optString("Address", "");
-        String address2 = obj2.optString("Address", "");
-        if (!address1.equalsIgnoreCase(address2)) {
-            System.out.println("The addresses don't match between the two records.");
-            return false;
-        }
-        
-        String cityState1 = obj1.optString("City&State", "");
+        // Compare City and State/Province
+        String city1 = obj1.optString("City&State", "").split("&")[0]; // Extract city from "City&State"
+        String state1 = obj1.optString("City&State", "").split("&")[1]; // Extract state from "City&State"
         String city2 = obj2.optString("City", "");
         String state2 = obj2.optString("State/Province", "");
 
-        if (cityState1.equalsIgnoreCase(city2 + "&" + state2)) {
-            System.out.println("City&State matches: " + cityState1);
-        } else {
-            System.out.println("City&State does not match.");
+        if (!city1.equalsIgnoreCase(city2)) {
+            System.out.println("City does not match.");
+            return false;
         }
-        
-        
 
-        return true;
+        if (!state1.equalsIgnoreCase(state2)) {
+            System.out.println("State/Province does not match.");
+            return false;
+        }
+
+        return true; // All details match
     }
 
     // Utility method to convert phone number format

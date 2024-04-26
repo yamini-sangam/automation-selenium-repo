@@ -1,0 +1,26 @@
+[
+  {
+    "City&State": "New York&NY",
+    "Email": "johndoe@example.com",
+    "Address": "123 Main St",
+    "Phoneno": "1234567890",
+    "Gender": "Male",
+    "Name": "John Doe"
+  },
+  {
+    "City&State": "Los Angeles&CA",
+    "Email": "janesmith@example.com",
+    "Address": "456 Elm St",
+    "Phoneno": "9876543210",
+    "Gender": "Female",
+    "Name": "Jane Smith"
+  },
+  {
+    "City&State": "Chicago&IL",
+    "Email": "michaelj@example.com",
+    "Address": "789 Oak St",
+    "Phoneno": "5556667777",
+    "Gender": "Male",
+    "Name": "Michael Johnson"
+  }
+]
